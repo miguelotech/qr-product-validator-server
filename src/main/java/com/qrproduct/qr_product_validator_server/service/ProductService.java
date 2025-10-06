@@ -2,6 +2,7 @@ package com.qrproduct.qr_product_validator_server.service;
 
 import com.qrproduct.qr_product_validator_server.model.Product;
 import com.qrproduct.qr_product_validator_server.repository.ProductRepository;
+import com.qrproduct.qr_product_validator_server.repository.ProductBatchRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository repo;
+    private final ProductBatchRepository batchRepo;
 
     public List<Product> getAllProducts() {
         return repo.findAll();
@@ -38,6 +40,9 @@ public class ProductService {
     public void deleteProduct(Long id) {
         if (!repo.existsById(id)) {
             throw new EntityNotFoundException("Producto no encontrado");
+        }
+        if (batchRepo.existsByProductId(id)) {
+            throw new IllegalStateException("No se puede borrar el producto: tiene lotes asociados");
         }
         repo.deleteById(id);
     }

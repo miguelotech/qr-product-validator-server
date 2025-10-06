@@ -1,0 +1,154 @@
+{
+  "info": {
+    "_postman_id": "cbbf16ab-1b7c-4b8d-9123-qrproductauth",
+    "name": "QR Product Auth API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "qrproductauth-collection"
+  },
+  "item": [
+    {
+      "name": "1️⃣ Products",
+      "item": [
+        {
+          "name": "GET - All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/admin/products"
+          }
+        },
+        {
+          "name": "GET - Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/admin/products/1"
+          }
+        },
+        {
+          "name": "POST - Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Saco Azul\",\n    \"image\": \"/img/saco-azul.png\",\n    \"registroSanitario\": \"RS-12345\"\n}"
+            },
+            "url": "{{base_url}}/admin/products"
+          }
+        },
+        {
+          "name": "PUT - Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Saco Azul Premium\",\n    \"image\": \"/img/saco-azul-premium.png\",\n    \"registroSanitario\": \"RS-12345-A\"\n}"
+            },
+            "url": "{{base_url}}/admin/products/1"
+          }
+        },
+        {
+          "name": "DELETE - Delete Product",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/admin/products/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2️⃣ Batches",
+      "item": [
+        {
+          "name": "GET - All Batches (by Product)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/products/1/batches"
+          }
+        },
+        {
+          "name": "GET - Batch by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/products/1/batches/{{batch_id}}"
+          }
+        },
+        {
+          "name": "POST - Create Batch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"numeroMaquilla\": \"MQ-001\",\n    \"variedadArroz\": \"Extra Añejo\",\n    \"fechaProduccion\": \"2025-09-01\",\n    \"fechaVencimiento\": \"2026-03-01\"\n}"
+            },
+            "url": "{{base_url}}/admin/products/1/batches"
+          }
+        },
+        {
+          "name": "PUT - Update Batch",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"numeroMaquilla\": \"MQ-002\",\n    \"variedadArroz\": \"Superior\",\n    \"fechaProduccion\": \"2025-10-01\",\n    \"fechaVencimiento\": \"2026-04-01\"\n}"
+            },
+            "url": "{{base_url}}/admin/products/1/batches/{{batch_id}}"
+          }
+        },
+        {
+          "name": "DELETE - Delete Batch",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/admin/products/1/batches/{{batch_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3️⃣ Public (QR Validation)",
+      "item": [
+        {
+          "name": "GET - Validate Product by BatchId (UUID)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/products/{{batch_id}}"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "batch_id",
+      "value": "7f3a9c2e-b4a6-4f89-9a4a-d58d6c03db0e"
+    }
+  ]
+}

@@ -12,4 +12,6 @@ public interface ProductBatchRepository extends JpaRepository<ProductBatch, UUID
 
     List<ProductBatch> findByProductId(Long productId);
 
+    boolean existsByProductId(Long productId);
+
 }
