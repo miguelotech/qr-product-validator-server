@@ -43,6 +43,34 @@
           }
         },
         {
+          "name": "POST - Create Product with Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Saco Azul Premium",
+                  "type": "text"
+                },
+                {
+                  "key": "registroSanitario",
+                  "value": "RS-12345",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": "{{base_url}}/admin/products/with-image"
+          }
+        },
+        {
           "name": "PUT - Update Product",
           "request": {
             "method": "PUT",
@@ -57,6 +85,35 @@
               "raw": "{\n    \"name\": \"Saco Azul Premium\",\n    \"image\": \"/img/saco-azul-premium.png\",\n    \"registroSanitario\": \"RS-12345-A\"\n}"
             },
             "url": "{{base_url}}/admin/products/1"
+          }
+        },
+        {
+          "name": "PUT - Update Product with Image",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Saco Azul Premium Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "registroSanitario",
+                  "value": "RS-12345-B",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "Nueva imagen del producto (opcional)"
+                }
+              ]
+            },
+            "url": "{{base_url}}/admin/products/1/with-image"
           }
         },
         {
