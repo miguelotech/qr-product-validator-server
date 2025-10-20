@@ -119,3 +119,4 @@ public class ImageService {
         return filename.substring(lastDotIndex);
     }
 }
+

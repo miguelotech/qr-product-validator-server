@@ -5,6 +5,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.qrcode.QRCodeWriter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,9 +17,17 @@ import java.util.UUID;
 @Service
 public class QrService {
 
+    @Value("${app.frontend-url:http://localhost:3000}")
+    private String frontendUrl;
+
     public String generateQrForBatch(UUID batchId) {
-        // url del frontend
-        String publicUrl = "http://localhost:3000/products/" + batchId; // URL que irá en el QR
+        // Construir la URL pública del frontend a usar en el QR
+        String base = frontendUrl == null ? "http://localhost:3000" : frontendUrl.trim();
+        // remover slash final si existe
+        if (base.endsWith("/")) {
+            base = base.substring(0, base.length() - 1);
+        }
+        String publicUrl = base + "/products/" + batchId; // URL que irá en el QR
 
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
