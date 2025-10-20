@@ -27,7 +27,7 @@ public class QrService {
         if (base.endsWith("/")) {
             base = base.substring(0, base.length() - 1);
         }
-        String publicUrl = base + "/products/" + batchId; // URL que irá en el QR
+        String publicUrl = base + "/validate/" + batchId; // URL que irá en el QR
 
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
