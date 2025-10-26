@@ -1,72 +1,82 @@
 package com.qrproduct.qr_product_validator_server.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
+import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class ImageService {
 
-    private static final String UPLOAD_DIR = "uploads/products";
+    private final Cloudinary cloudinary;
     private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
     /**
-     * Guarda una imagen de producto en la carpeta local
+     * Guarda una imagen de producto en Cloudinary
      * @param file archivo de imagen a guardar
-     * @return ruta relativa de la imagen guardada
+     * @return URL de la imagen guardada en Cloudinary
      */
     public String saveProductImage(MultipartFile file) {
         try {
             // Validar archivo
             validateImageFile(file);
             
-            // Crear directorio si no existe
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            // Subir a Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(
+                file.getBytes(),
+                ObjectUtils.asMap(
+                    "folder", "products",
+                    "resource_type", "auto"
+                )
+            );
             
-            // Generar nombre único para el archivo
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = getFileExtension(originalFilename);
-            String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
-            
-            // Guardar archivo
-            Path filePath = uploadPath.resolve(uniqueFilename);
-            Files.copy(file.getInputStream(), filePath);
-            
-            // Retornar ruta relativa para acceso web
-            return "/" + UPLOAD_DIR + "/" + uniqueFilename;
+            // Retornar URL de Cloudinary
+            return uploadResult.get("secure_url").toString();
             
         } catch (IOException e) {
-            throw new RuntimeException("Error al guardar la imagen del producto", e);
+            throw new RuntimeException("Error al guardar la imagen del producto en Cloudinary", e);
         }
     }
     
     /**
-     * Elimina una imagen de producto
-     * @param imagePath ruta de la imagen a eliminar
+     * Elimina una imagen de producto de Cloudinary
+     * @param imageUrl URL de la imagen a eliminar
      */
-    public void deleteProductImage(String imagePath) {
+    public void deleteProductImage(String imageUrl) {
         try {
-            if (imagePath != null && !imagePath.isEmpty()) {
-                // Remover el "/" inicial si existe
-                String cleanPath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
-                Path filePath = Paths.get(cleanPath);
-                
-                if (Files.exists(filePath)) {
-                    Files.delete(filePath);
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                // Extraer el public_id de la URL de Cloudinary
+                String publicId = extractPublicIdFromUrl(imageUrl);
+                if (publicId != null) {
+                    // Eliminar de Cloudinary
+                    cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error al eliminar la imagen del producto", e);
+            throw new RuntimeException("Error al eliminar la imagen del producto de Cloudinary", e);
         }
+    }
+
+    /**
+     * Extrae el public_id de una URL de Cloudinary
+     */
+    private String extractPublicIdFromUrl(String imageUrl) {
+        // Ejemplo de URL de Cloudinary: https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/products/image.jpg
+        if (imageUrl.contains("/upload/")) {
+            String[] parts = imageUrl.split("/upload/");
+            if (parts.length > 1) {
+                // Remover la versión y la extensión
+                String path = parts[1].replaceAll("v\\d+/", "");
+                return path.substring(0, path.lastIndexOf("."));
+            }
+        }
+        return null;
     }
     
     /**
